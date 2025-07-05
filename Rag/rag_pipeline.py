@@ -2,13 +2,20 @@ from transformers import pipeline
 from sentence_transformers import SentenceTransformer
 import faiss
 import pickle
+import torch
 
 class RAGQuoteRetriever:
     def __init__(self, embed_model="all-MiniLM-L6-v2", gen_model="google/flan-t5-base"):
+        
         self.embedder = SentenceTransformer(embed_model)
+        self.embedder = self.embedder.to(torch.device("cpu"))
+
+        # Step 2: Load FAISS index and quote texts
         self.index = faiss.read_index("faiss_index.idx")
         with open("quote_texts.pkl", "rb") as f:
             self.quotes = pickle.load(f)
+
+        # Step 3: Load the text2text generation pipeline
         self.generator = pipeline("text2text-generation", model=gen_model)
 
     def retrieve(self, query, top_k=3):
