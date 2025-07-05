@@ -8,7 +8,7 @@ import os
 class RAGQuoteRetriever:
     def __init__(self,
                  embed_model="sentence-transformers/all-MiniLM-L6-v2",
-                 gen_model = "tiiuae/falcon-rw-1b" :
+                 gen_model="google/flan-t5-base"):
         self.embedder = SentenceTransformer(embed_model)
         self.index = faiss.read_index("faiss_index.idx")
         with open("quote_texts.pkl", "rb") as f:
