@@ -6,7 +6,6 @@ import pickle
 class RAGQuoteRetriever:
     def __init__(self, embed_model="sentence-transformers/all-MiniLM-L6-v2", gen_model="google/flan-t5-base"):
         try:
-            # Force local CPU usage and prevent meta tensor error
             self.embedder = SentenceTransformer(embed_model, device='cpu')
         except Exception as e:
             import os
