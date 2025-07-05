@@ -6,10 +6,11 @@ import pickle
 class RAGQuoteRetriever:
     def __init__(self, embed_model="sentence-transformers/all-MiniLM-L6-v2", gen_model="google/flan-t5-base"):
         try:
-            self.embedder = SentenceTransformer(embed_model, device='cpu')
+            # Don't set device manually
+            self.embedder = SentenceTransformer(embed_model)
         except Exception as e:
             import os
-            print("Fallback: downloading model manually to avoid meta tensor issues.")
+            print("❗ Fallback: downloading model manually to avoid meta tensor issues.")
             os.system(f"python3 -m sentence_transformers.scripts.download {embed_model}")
             self.embedder = SentenceTransformer(embed_model)
 
