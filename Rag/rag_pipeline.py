@@ -2,11 +2,8 @@ from transformers import pipeline
 from sentence_transformers import SentenceTransformer
 import faiss
 import pickle
-from huggingface_hub import login
 import os
 
-# Login to Hugging Face
-login(token=os.environ["HF_TOKEN"])
 
 class RAGQuoteRetriever:
     def __init__(self,

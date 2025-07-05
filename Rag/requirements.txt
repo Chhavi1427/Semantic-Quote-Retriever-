@@ -1,5 +1,5 @@
 transformers
-sentence-transformers
+sentence_transformers
 faiss-cpu
 streamlit
 datasets
