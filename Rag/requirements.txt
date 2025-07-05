@@ -4,3 +4,4 @@ faiss-cpu
 streamlit
 datasets
 scikit-learn
+torch
