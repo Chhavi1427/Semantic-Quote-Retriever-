@@ -4,15 +4,21 @@ import faiss
 import pickle
 
 class RAGQuoteRetriever:
-    def __init__(self, embed_model="all-MiniLM-L6-v2", gen_model="google/flan-t5-base"):
-        # ✅ Proper fix for meta tensor issue
-        self.embedder = SentenceTransformer(embed_model, device='cpu')
+    def __init__(self, embed_model="sentence-transformers/all-MiniLM-L6-v2", gen_model="google/flan-t5-base"):
+        try:
+            # Force local CPU usage and prevent meta tensor error
+            self.embedder = SentenceTransformer(embed_model, device='cpu')
+        except Exception as e:
+            import os
+            print("Fallback: downloading model manually to avoid meta tensor issues.")
+            os.system(f"python3 -m sentence_transformers.scripts.download {embed_model}")
+            self.embedder = SentenceTransformer(embed_model, device='cpu')
 
         self.index = faiss.read_index("faiss_index.idx")
         with open("quote_texts.pkl", "rb") as f:
             self.quotes = pickle.load(f)
 
-        self.generator = pipeline("text2text-generation", model=gen_model)
+        self.generator = pipeline("text2text-generation", model=gen_model, device=-1)  # force CPU
 
     def retrieve(self, query, top_k=3):
         q_embed = self.embedder.encode([query])
