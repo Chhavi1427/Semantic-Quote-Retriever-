@@ -5,20 +5,18 @@ import pickle
 
 class RAGQuoteRetriever:
     def __init__(self, embed_model="sentence-transformers/all-MiniLM-L6-v2", gen_model="google/flan-t5-base"):
-        try:
-            # Don't set device manually
-            self.embedder = SentenceTransformer(embed_model)
-        except Exception as e:
-            import os
-            print("❗ Fallback: downloading model manually to avoid meta tensor issues.")
-            os.system(f"python3 -m sentence_transformers.scripts.download {embed_model}")
-            self.embedder = SentenceTransformer(embed_model)
+        # ✅ Load without device override
+        self.embedder = SentenceTransformer(embed_model)
 
+        # ✅ Load FAISS index
         self.index = faiss.read_index("faiss_index.idx")
+
+        # ✅ Load quotes
         with open("quote_texts.pkl", "rb") as f:
             self.quotes = pickle.load(f)
 
-        self.generator = pipeline("text2text-generation", model=gen_model, device=-1)  # force CPU
+        # ✅ Use generator with CPU explicitly
+        self.generator = pipeline("text2text-generation", model=gen_model, device=-1)
 
     def retrieve(self, query, top_k=3):
         q_embed = self.embedder.encode([query])
