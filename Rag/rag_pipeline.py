@@ -4,15 +4,18 @@ import faiss
 import pickle
 import os
 
-
 class RAGQuoteRetriever:
     def __init__(self,
                  embed_model="sentence-transformers/all-MiniLM-L6-v2",
                  gen_model="google/flan-t5-base"):
         self.embedder = SentenceTransformer(embed_model)
-        self.index = faiss.read_index("faiss_index.idx")
-        with open("quote_texts.pkl", "rb") as f:
-            self.quotes = pickle.load(f)
+
+        try:
+            self.index = faiss.read_index("faiss_index.idx")
+            with open("quote_texts.pkl", "rb") as f:
+                self.quotes = pickle.load(f)
+        except FileNotFoundError:
+            raise FileNotFoundError("Missing FAISS index or quote_texts.pkl. Please run build_faiss_index().")
 
         self.generator = pipeline("text2text-generation",
                                   model=gen_model,
