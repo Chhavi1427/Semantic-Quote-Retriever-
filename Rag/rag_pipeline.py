@@ -11,7 +11,7 @@ class RAGQuoteRetriever:
             import os
             print("Fallback: downloading model manually to avoid meta tensor issues.")
             os.system(f"python3 -m sentence_transformers.scripts.download {embed_model}")
-            self.embedder = SentenceTransformer(embed_model, device='cpu')
+            self.embedder = SentenceTransformer(embed_model)
 
         self.index = faiss.read_index("faiss_index.idx")
         with open("quote_texts.pkl", "rb") as f:
