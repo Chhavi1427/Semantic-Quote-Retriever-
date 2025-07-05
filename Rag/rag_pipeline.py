@@ -8,23 +8,15 @@ import os
 class RAGQuoteRetriever:
     def __init__(self,
                  embed_model="sentence-transformers/all-MiniLM-L6-v2",
-                 gen_model="tiiuae/falcon-rw-1b"):  # ← Fixed closing parenthesis here
-
+                 gen_model = "tiiuae/falcon-rw-1b" :
         self.embedder = SentenceTransformer(embed_model)
-
-        # Load FAISS index
         self.index = faiss.read_index("faiss_index.idx")
-
-        # Load quotes
         with open("quote_texts.pkl", "rb") as f:
             self.quotes = pickle.load(f)
 
-        # Load text generation pipeline
-        self.generator = pipeline(
-            "text2text-generation",
-            model=gen_model,
-            device=-1  # -1 = CPU
-        )
+        self.generator = pipeline("text2text-generation",
+                                  model=gen_model,
+                                  device=-1)  # CPU
 
     def retrieve(self, query, top_k=3):
         q_embed = self.embedder.encode([query])
